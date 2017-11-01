@@ -1,0 +1,27 @@
+version: '3.2'
+
+services:
+  git:
+    image: joseba/rpi-gitea
+    volumes:
+      - "/data/global/gitea:/data"
+    ports:
+      - "8022:22"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.port=3000"
+        - "traefik.backend=git"
+        - "traefik.frontend.rule=Host:git.joseba.io"
+        - "traefik.docker.network=proxy-net"
+      placement:
+        constraints:
+          - node.role==manager
+
+networks:
+  proxy-net:
+    driver: overlay
+    external: true
+
