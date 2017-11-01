@@ -1,0 +1,58 @@
+version: '3.2'
+
+services:
+  traefik:
+# conf completa https://github.com/containous/traefik/issues/1479
+    image: traefik
+    networks:
+      - proxy-net
+    ports:
+      - "80:80"
+      - "8080:8080"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /data/global/traefik:/etc/traefik
+#    labels:
+#      - "traefik.enable=false"
+    deploy:
+      replicas: 1
+#      mode: global
+#      placement:
+#        constraints:
+#          - node.role==manager
+      restart_policy:
+        condition: on-failure
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 128M
+        reservations:
+          cpus: '0.10'
+          memory: 64M
+      update_config:
+        parallelism: 1
+        delay: 10s
+
+  docker:
+    image: portainer/portainer
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/data/global/portainer:/data"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.port=9000"
+        - "traefik.backend=docker"
+        - "traefik.frontend.rule=Host:docker.joseba.io"
+      placement:
+        constraints:
+          - node.role==manager
+
+networks:
+  proxy-net:
+    driver: overlay
+    external: true
+
