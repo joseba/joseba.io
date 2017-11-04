@@ -12,7 +12,7 @@ services:
     deploy:
       replicas: 1
       labels:
-        - "traefik.port=3000"
+        - "traefik.port=3001"
         - "traefik.backend=git"
         - "traefik.frontend.rule=Host:git.joseba.io"
         - "traefik.docker.network=proxy-net"
