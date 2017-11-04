@@ -15,8 +15,10 @@ services:
       placement:
         constraints:
           - node.role==manager
-  telegraf:
+  telegraf1:
     image: telegraf
+    environment:
+      - AGENT_NAME=rpi-node01
     volumes:
       - "/data/global/telegraf:/etc/telegraf"
       - "/var/run/docker.sock:/var/run/docker.sock"
@@ -28,7 +30,39 @@ services:
         - "traefik.enable=false"
       placement:
         constraints:
-          - node.role==manager
+          - node.hostname==rpi-node01
+  telegraf2:
+    image: telegraf
+    environment:
+      - AGENT_NAME=rpi-node02
+    volumes:
+      - "/data/global/telegraf:/etc/telegraf"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - telemetry-net
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=false"
+      placement:
+        constraints:
+          - node.hostname==rpi-node02
+  telegraf3:
+    image: telegraf
+    environment:
+      - AGENT_NAME=rpi-node03
+    volumes:
+      - "/data/global/telegraf:/etc/telegraf"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - telemetry-net
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=false"
+      placement:
+        constraints:
+          - node.hostname==rpi-node03
   grafana:
     image: joseba/rpi-grafana
     volumes:
@@ -46,7 +80,6 @@ services:
       placement:
         constraints:
           - node.role==manager          
-
 networks:
   proxy-net:
     driver: overlay

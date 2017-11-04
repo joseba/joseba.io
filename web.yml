@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   git:
-    image: joseba/rpi-gitea
+    image: joseba/rpi-gitea:latest
     volumes:
       - "/data/global/gitea:/data"
     ports:
@@ -19,6 +19,21 @@ services:
       placement:
         constraints:
           - node.role==manager
+  haste:
+    image: joseba/rpi-haste:latest
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.port=7777"
+        - "traefik.backend=haste"
+        - "traefik.frontend.rule=Host:haste.joseba.io"
+        - "traefik.docker.network=proxy-net"
+      placement:
+        constraints:
+          - node.role==manager
+
 
 networks:
   proxy-net:
