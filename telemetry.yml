@@ -2,7 +2,7 @@ version: '3.2'
 
 services:
   influxdb:
-    image: influxdb
+    image: influxdb:latest
     volumes:
       - "/data/global/influxdb/conf:/etc/influxdb"
       - "/data/global/influxdb/data:/var/lib/influxdb"      
@@ -16,12 +16,16 @@ services:
         constraints:
           - node.role==manager
   telegraf1:
-    image: telegraf
+    image: telegraf:latest
     environment:
       - AGENT_NAME=rpi-node01
+      - HOST_ETC=/rootfs/etc
+      - HOST_SYS=/rootfs/sys
+      - HOST_PROC=/rootfs/proc
     volumes:
       - "/data/global/telegraf:/etc/telegraf"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/rootfs:ro"
     networks:
       - telemetry-net
     deploy:
@@ -32,12 +36,16 @@ services:
         constraints:
           - node.hostname==rpi-node01
   telegraf2:
-    image: telegraf
+    image: telegraf:latest
     environment:
       - AGENT_NAME=rpi-node02
+      - HOST_ETC=/rootfs/etc
+      - HOST_SYS=/rootfs/sys
+      - HOST_PROC=/rootfs/proc      
     volumes:
       - "/data/global/telegraf:/etc/telegraf"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/rootfs:ro"
     networks:
       - telemetry-net
     deploy:
@@ -48,12 +56,16 @@ services:
         constraints:
           - node.hostname==rpi-node02
   telegraf3:
-    image: telegraf
+    image: telegraf:latest
     environment:
       - AGENT_NAME=rpi-node03
+      - HOST_ETC=/rootfs/etc
+      - HOST_SYS=/rootfs/sys
+      - HOST_PROC=/rootfs/proc      
     volumes:
       - "/data/global/telegraf:/etc/telegraf"
       - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/rootfs:ro"
     networks:
       - telemetry-net
     deploy:
@@ -64,7 +76,7 @@ services:
         constraints:
           - node.hostname==rpi-node03
   grafana:
-    image: joseba/rpi-grafana
+    image: joseba/rpi-grafana:latest
     volumes:
       - "/data/global/grafana/data:/var/lib/grafana"
       - "/data/global/grafana/conf:/etc/grafana"
