@@ -1,0 +1,40 @@
+version: '3.2'
+
+services:
+  influxdb:
+    image: influxdb
+    volumes:
+      - "/data/global/influxdb/conf:/etc/influxdb"
+      - "/data/global/influxdb/data:/var/lib/influxdb"      
+    networks:
+      - telemetry-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.enable=false"
+      placement:
+        constraints:
+          - node.role==manager
+  telegraf:
+    image: telegraf
+    volumes:
+      - "/data/global/telegraf:/etc/telegraf"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+    networks:
+      - telemetry-net
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=false"
+      placement:
+        constraints:
+          - node.role==manager
+
+networks:
+  proxy-net:
+    driver: overlay
+    external: true
+  telemetry-net:
+    driver: overlay
+    external: true
+
