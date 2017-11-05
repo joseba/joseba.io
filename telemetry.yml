@@ -7,7 +7,7 @@ services:
       - "/data/global/influxdb/conf:/etc/influxdb"
       - "/data/global/influxdb/data:/var/lib/influxdb"      
     networks:
-      - telemetry-net
+      - proxy-net
     deploy:
       replicas: 1
       labels:
@@ -27,7 +27,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/:/rootfs:ro"
     networks:
-      - telemetry-net
+      - proxy-net
     deploy:
       mode: global
       labels:
@@ -47,7 +47,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/:/rootfs:ro"
     networks:
-      - telemetry-net
+      - proxy-net
     deploy:
       mode: global
       labels:
@@ -67,7 +67,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/:/rootfs:ro"
     networks:
-      - telemetry-net
+      - proxy-net
     deploy:
       mode: global
       labels:
@@ -75,6 +75,26 @@ services:
       placement:
         constraints:
           - node.hostname==rpi-node03
+  telegraf4:
+    image: telegraf:latest
+    environment:
+      - AGENT_NAME=rpi-node04
+      - HOST_ETC=/rootfs/etc
+      - HOST_SYS=/rootfs/sys
+      - HOST_PROC=/rootfs/proc      
+    volumes:
+      - "/data/global/telegraf:/etc/telegraf"
+      - "/var/run/docker.sock:/var/run/docker.sock"
+      - "/:/rootfs:ro"
+    networks:
+      - proxy-net
+    deploy:
+      mode: global
+      labels:
+        - "traefik.enable=false"
+      placement:
+        constraints:
+          - node.hostname==rpi-node04
   grafana:
     image: joseba/rpi-grafana:latest
     volumes:
@@ -82,7 +102,6 @@ services:
       - "/data/global/grafana/conf:/etc/grafana"
     networks:
       - proxy-net
-      - telemetry-net
     deploy:
       replicas: 1
       labels:
@@ -94,9 +113,6 @@ services:
           - node.role==manager          
 networks:
   proxy-net:
-    driver: overlay
-    external: true
-  telemetry-net:
     driver: overlay
     external: true
 

@@ -4,7 +4,7 @@ services:
   minio1:
     image: minio/minio:edge-armhf
     volumes:
-      - "/data/global/s3/01:/export"
+      - "/data/s3-01:/export"
     networks:
       - proxy-net
     deploy:
@@ -13,6 +13,9 @@ services:
         - "traefik.port=9000"
         - "traefik.backend=minio1"
         - "traefik.frontend.rule=Host:s3.joseba.io"    
+      placement:
+        constraints:
+          - node.hostname==rpi-node01        
     command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
     secrets:
       - secret_key
@@ -21,7 +24,7 @@ services:
   minio2:
     image: minio/minio:edge-armhf
     volumes:
-      - "/data/global/s3/02:/export"
+      - "/data/s3-01:/export"
     networks:
       - proxy-net
     deploy:
@@ -30,6 +33,9 @@ services:
         - "traefik.port=9000"
         - "traefik.backend=minio2"
         - "traefik.frontend.rule=Host:s3.joseba.io"        
+      placement:
+        constraints:
+          - node.hostname==rpi-node02        
     command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
     secrets:
       - secret_key
@@ -38,7 +44,7 @@ services:
   minio3:
     image: minio/minio:edge-armhf
     volumes:
-      - "/data/global/s3/03:/export"
+      - "/data/s3-01:/export"
     networks:
       - proxy-net
     deploy:
@@ -47,6 +53,9 @@ services:
         - "traefik.port=9000"
         - "traefik.backend=minio3"
         - "traefik.frontend.rule=Host:s3.joseba.io"        
+      placement:
+        constraints:
+          - node.hostname==rpi-node03        
     command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
     secrets:
       - secret_key
@@ -55,7 +64,7 @@ services:
   minio4:
     image: minio/minio:edge-armhf
     volumes:
-      - "/data/global/s3/04:/export"
+      - "/data/s3-01:/export"
     networks:
       - proxy-net
     deploy:
@@ -64,6 +73,9 @@ services:
         - "traefik.port=9000"
         - "traefik.backend=minio4"
         - "traefik.frontend.rule=Host:s3.joseba.io"            
+      placement:
+        constraints:
+          - node.hostname==rpi-node04
     command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
     secrets:
       - secret_key
