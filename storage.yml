@@ -1,0 +1,83 @@
+version: '3.2'
+
+services:
+  minio1:
+    image: minio/minio:edge-armhf
+    volumes:
+      - "/data/global/s3/01:/export"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1
+      labels:
+        - "traefik.port=9000"
+        - "traefik.backend=minio1"
+        - "traefik.frontend.rule=Host:s3.joseba.io"    
+    command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
+    secrets:
+      - secret_key
+      - access_key
+
+  minio2:
+    image: minio/minio:edge-armhf
+    volumes:
+      - "/data/global/s3/02:/export"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1    
+      labels:
+        - "traefik.port=9000"
+        - "traefik.backend=minio2"
+        - "traefik.frontend.rule=Host:s3.joseba.io"        
+    command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
+    secrets:
+      - secret_key
+      - access_key
+
+  minio3:
+    image: minio/minio:edge-armhf
+    volumes:
+      - "/data/global/s3/03:/export"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1    
+      labels:
+        - "traefik.port=9000"
+        - "traefik.backend=minio3"
+        - "traefik.frontend.rule=Host:s3.joseba.io"        
+    command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
+    secrets:
+      - secret_key
+      - access_key
+
+  minio4:
+    image: minio/minio:edge-armhf
+    volumes:
+      - "/data/global/s3/04:/export"
+    networks:
+      - proxy-net
+    deploy:
+      replicas: 1    
+      labels:
+        - "traefik.port=9000"
+        - "traefik.backend=minio4"
+        - "traefik.frontend.rule=Host:s3.joseba.io"            
+    command: server http://minio1/export http://minio2/export http://minio3/export http://minio4/export
+    secrets:
+      - secret_key
+      - access_key
+
+networks:
+  proxy-net:
+    driver: overlay
+    external: true
+
+secrets:
+  secret_key:
+    external: true
+  access_key:
+    external: true
+ 
+ 
